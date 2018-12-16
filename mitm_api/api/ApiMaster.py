@@ -15,6 +15,7 @@ from mitmproxy.addons import termstatus
 from mitmproxy.tools.web import app, webaddons, static_viewer
 
 from mitm_api.addons.PassthroughAddon import PassthroughAddon
+from mitm_api.api.api.ApiApplication import ApiApplication
 
 
 class ApiMaster(master.Master):
@@ -46,6 +47,9 @@ class ApiMaster(master.Master):
         if with_termlog:
             self.addons.add(termlog.TermLog(), termstatus.TermStatus())
         self.app = app.Application(
+            self, self.options.web_debug
+        )
+        self.api = ApiApplication(
             self, self.options.web_debug
         )
 
@@ -113,4 +117,12 @@ class ApiMaster(master.Master):
         self.log.info(
             "Web server listening at {}".format(web_url),
         )
+
+        api_server = tornado.httpserver.HTTPServer(self.api)
+        api_server.listen(self.options.web_port + 1, self.options.web_iface)
+        api_url = "http://{}:{}/".format(self.options.web_iface, self.options.web_port + 1)
+        self.log.info(
+            "Web server listening at {}".format(api_url),
+        )
+
         self.run_loop(iol.start)
