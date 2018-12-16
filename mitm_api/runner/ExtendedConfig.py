@@ -15,10 +15,8 @@ from mitm_api.runner.DynamicHostMatcher import DynamicHostMatcher
 
 class ExtendedConfig(ProxyConfig):
     def configure(self, options: moptions.Options, updated: typing.Any) -> None:
-        if "ignore_hosts" in updated:
-            self.check_ignore = DynamicHostMatcher(options.ignore_hosts)
-        if "tcp_hosts" in updated:
-            self.check_tcp = DynamicHostMatcher(options.tcp_hosts)
+        self.check_ignore = DynamicHostMatcher(options.ignore_hosts)
+        self.check_tcp = DynamicHostMatcher(options.tcp_hosts)
 
         certstore_path = os.path.expanduser(options.confdir)
         if not os.path.exists(os.path.dirname(certstore_path)):
