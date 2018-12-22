@@ -15,7 +15,7 @@ from mitmproxy.addons import termstatus
 from mitmproxy.tools.web import app, webaddons, static_viewer
 
 from mitm_api.addons.PassthroughAddon import PassthroughAddon
-from mitm_api.api.api.ApiApplication import ApiApplication
+from mitm_api.api_master.api.ApiApplication import ApiApplication
 
 
 class ApiMaster(master.Master):

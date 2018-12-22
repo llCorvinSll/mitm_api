@@ -81,8 +81,8 @@ class MatcherHandler(RequestHandler):
     def get(self, host):
         print(host)
         passthrough_addon = self.master.addons.get("passthroughaddon")
-        self.master.commands.call("passthroughaddon.trackhost", host)
         passthrough_addon.track_host(host)
+
 
 class ApiApplication(tornado.web.Application):
     def __init__(self, master, debug):

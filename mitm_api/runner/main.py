@@ -13,7 +13,7 @@ from mitmproxy import optmanager
 from mitmproxy import proxy
 from mitmproxy.utils import debug, arg_check
 
-from mitm_api.api.ApiMaster import ApiMaster
+from mitm_api.api_master.ApiMaster import ApiMaster
 from mitm_api.runner.ExtendedConfig import ExtendedConfig
 
 OPTIONS_FILE_NAME = "config.yaml"
