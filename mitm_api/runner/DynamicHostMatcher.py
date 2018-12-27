@@ -29,5 +29,9 @@ class DynamicHostMatcher:
         self.patterns.append(pattern)
         self.recalculate_regexps()
 
+    def remove(self, pattern):
+        self.patterns.remove(pattern)
+        self.recalculate_regexps()
+
     def recalculate_regexps(self):
         self.regexes = [re.compile(p, re.IGNORECASE) for p in self.patterns]
