@@ -14,6 +14,7 @@ from mitmproxy.addons import view
 from mitmproxy.addons import termstatus
 from mitmproxy.tools.web import app, webaddons, static_viewer
 
+from mitm_api.addons.MockAddon import MockAddon
 from mitm_api.addons.PassthroughAddon import PassthroughAddon
 from mitm_api.api_master.api.ApiApplication import ApiApplication
 
@@ -36,6 +37,7 @@ class ApiMaster(master.Master):
 
         self.addons.add(*addons.default_addons())
         self.addons.add(
+            MockAddon(),
             PassthroughAddon(),
             webaddons.WebAddon(),
             intercept.Intercept(),
