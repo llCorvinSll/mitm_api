@@ -17,6 +17,11 @@ class MatcherHandler(RequestHandler):
         passthrough_addon.untrack_host(host)
 
 
+class MockCreateHandler(RequestHandler):
+    def post(self, context):
+        print("create proxy for", context)
+
+
 class BaseApiApplication(tornado.web.Application):
     def __init__(self, master, debug):
         self.master = master
@@ -34,7 +39,8 @@ class ApiRouter(BaseApiApplication):
     def __init__(self, master, debug):
         super().__init__(master, debug)
         self.add_handlers(HOST_MATHER, [
-            (r"/api/v1/(?P<host>[\.0-9a-z\-]+)/track", MatcherHandler)
+            (r"/api/v1/mock/(?P<context>[\.0-9a-zA-Z\-]+)", MockCreateHandler),
+            (r"/api/v1/(?P<host>[\.0-9a-z\-]+)/track", MatcherHandler),
         ])
 
 
