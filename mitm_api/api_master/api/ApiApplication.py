@@ -20,6 +20,8 @@ class MatcherHandler(RequestHandler):
 class MockCreateHandler(RequestHandler):
     def post(self, context):
         print("create proxy for", context)
+        mock_addon = self.master.addons.get("mockaddon")
+        mock_addon.add_mock(context, tornado.escape.json_decode(self.request.body))
 
 
 class BaseApiApplication(tornado.web.Application):
