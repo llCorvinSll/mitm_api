@@ -8,7 +8,7 @@ from mitmproxy import options as moptions
 from mitmproxy import certs
 from mitmproxy.net import server_spec
 from mitmproxy.proxy import ProxyConfig
-from mitmproxy.proxy.config import CONF_BASENAME
+from mitmproxy.proxy.config import CONF_BASENAME, HostMatcher
 
 from mitm_api.runner.DynamicHostMatcher import DynamicHostMatcher
 
@@ -16,7 +16,7 @@ from mitm_api.runner.DynamicHostMatcher import DynamicHostMatcher
 class ExtendedConfig(ProxyConfig):
     def configure(self, options: moptions.Options, updated: typing.Any) -> None:
         self.check_ignore = DynamicHostMatcher(options.ignore_hosts)
-        self.check_tcp = DynamicHostMatcher(options.tcp_hosts)
+        self.check_tcp = HostMatcher(options.tcp_hosts)
 
         certstore_path = os.path.expanduser(options.confdir)
         if not os.path.exists(os.path.dirname(certstore_path)):

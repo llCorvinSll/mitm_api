@@ -49,7 +49,10 @@ class RedirectHandler(RequestHandler):
 
     def post(self, context):
         print("make redirect for ", context)
-        print(tornado.escape.json_decode(self.request.body))
+        mock_addon = self.master.addons.get("mockaddon")
+
+        parsed_body = tornado.escape.json_decode(self.request.body)
+        mock_addon.add_redirect(context, parsed_body["from"], parsed_body["to"])
 
 
 class BaseApiApplication(tornado.web.Application):

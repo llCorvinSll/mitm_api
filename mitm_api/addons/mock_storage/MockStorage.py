@@ -2,6 +2,14 @@ class MockContext:
     def __init__(self, key: str):
         self.configs = []
         self.key = key
+        self.redirects = {}
+
+    def add_redirect(self, from_url, to_url):
+        self.redirects[from_url] = to_url
+
+    def get_redirect(self, url):
+        if url in self.redirects.keys():
+            return self.redirects[url]
 
     def add_mock(self, config):
 
