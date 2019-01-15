@@ -2,7 +2,7 @@ from mitmproxy import http
 from mitmproxy import ctx
 import re
 
-from mitm_api.addons.mock_storage.MockStorage import MockContext
+from mitm_api.addons.mock_storage.MockContext import MockContext
 
 
 class MockAddon:
