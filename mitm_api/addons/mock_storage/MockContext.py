@@ -1,3 +1,6 @@
+import json
+
+from mitmproxy import http, ctx
 
 
 class MockContext:
@@ -23,14 +26,36 @@ class MockContext:
 
         self.configs.append(config)
 
-    def get_mock(self):  # , service: str, method: str, command: str, params):
-        pre_results = []
+    def get_mock(self, flow: http.HTTPFlow):
+        service = flow.request.path.split('/')[1]
 
-        for value in self.configs:
-            if not ("service" in value and value["service"]):
-                continue
+        raw_url = flow.request.path.split('?')[0]
 
-            print(value)
+        raw_url = raw_url.split('/')
+
+        raw_url.pop(0)
+        raw_url.pop(0)
+
+        method = '/'.join(map(str, raw_url))
+
+        print(service, method, flow.request.method)
+
+        print(flow.request.query)
+
+        params = {}
+
+        for key in flow.request.query:
+            params[key] = flow.request.query[key]
+
+        for key in flow.request.urlencoded_form:
+            params[key] = flow.request.urlencoded_form[key]
+
+        mock = get_matched_config(service, flow.request.method, method, params, self.configs)
+
+        if mock:
+            ctx.log("[mocking][{}] {}".format(self.key, method))
+            flow.response.text = json.dumps(mock["response"]["result"])
+            flow.response.status_code = mock["status"]
 
 
 def get_matched_config(service, method, command, params, configs):
@@ -50,7 +75,7 @@ def get_matched_config(service, method, command, params, configs):
             pre_results.append(value)
 
     if len(params.keys()) == 0:
-        empty_results = list(filter(lambda cfg: not cfg["params"] or len(cfg["params"]) == 0, pre_results))
+        empty_results = list(filter(lambda cfg: not "params" in cfg or len(cfg["params"]) == 0, pre_results))
 
         if len(empty_results):
             return format_response(empty_results[0])
@@ -63,12 +88,14 @@ def get_matched_config(service, method, command, params, configs):
     for value in pre_results:
         intersection_weight = 0
 
-        mock_params = value["params"]
+        if "params" in value:
 
-        for i in mock_params.keys():
-            if i in mock_params and i in params:
-                if str(params[i]) and str(mock_params[i]) == str(params[i]):
-                    intersection_weight = intersection_weight + 1
+            mock_params = value["params"]
+
+            for i in mock_params.keys():
+                if i in mock_params and i in params:
+                    if str(params[i]) and str(mock_params[i]) == str(params[i]):
+                        intersection_weight = intersection_weight + 1
 
         if intersection_weight >= 0 and intersection_weight >= max_intersection_weight:
             max_intersection_weight = intersection_weight

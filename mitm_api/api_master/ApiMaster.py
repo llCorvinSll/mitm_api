@@ -124,7 +124,7 @@ class ApiMaster(master.Master):
         api_server.listen(self.options.web_port + 1, self.options.web_iface)
         api_url = "http://{}:{}/".format(self.options.web_iface, self.options.web_port + 1)
         self.log.info(
-            "Web server listening at {}".format(api_url),
+            "api server listening at {}".format(api_url),
         )
 
         self.run_loop(iol.start)

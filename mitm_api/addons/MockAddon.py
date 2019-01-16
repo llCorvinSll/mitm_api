@@ -16,7 +16,6 @@ class MockAddon:
         session = extract_context(flow)
         context = self._get_context(session)
         original_host = flow.request.pretty_host
-        print(session, original_host)
 
         if context:
             self._handle_hidden_redirect(context, flow, original_host)
@@ -28,9 +27,8 @@ class MockAddon:
         """
         redirect_host = context.get_redirect(original_host)
 
-        ctx.log('redirect {} to {}'.format(original_host, redirect_host))
-
         if redirect_host:
+            ctx.log("[spoofing][{}] redirect {} to {}".format(context.key, original_host, redirect_host))
             flow.request.host = redirect_host
             flow.request.port = 80
             flow.request.scheme = 'http'
@@ -44,7 +42,7 @@ class MockAddon:
 
         if session and session in self.sessions:
             mock_storage = self.sessions[session]
-            mock_storage.get_mock()
+            mock_storage.get_mock(flow)
 
     def add_mock(self, session, mock_config):
         print(session)
@@ -53,7 +51,7 @@ class MockAddon:
         self.sessions[session].add_mock(mock_config)
 
     def add_redirect(self, session, from_url, to_url):
-        print("add_redirect ", session, from_url, to_url)
+        ctx.log("[spoofing][{}] add_redirect ({} -> {})".format(session, from_url, to_url))
         self._ensure_context(session)
 
         self.sessions[session].add_redirect(from_url, to_url)
