@@ -5,7 +5,7 @@ from mitmproxy import ctx
 class PassthroughAddon:
 
     @command.command("passthroughaddon.trackhost")
-    def track_host(self, host):
+    def track_host(self, host: str) -> None:
         ctx.log("add host to track %s" % host)
         cfg = ctx.master.server.config
 
@@ -13,7 +13,7 @@ class PassthroughAddon:
 
 
     @command.command("passthroughaddon.untrackhost")
-    def untrack_host(self, host):
+    def untrack_host(self, host: str) -> None:
         ctx.log("remove host to track %s" % host)
         cfg = ctx.master.server.config
 

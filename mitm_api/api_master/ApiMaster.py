@@ -114,14 +114,14 @@ class ApiMaster(master.Master):
         AsyncIOMainLoop().install()
         iol = tornado.ioloop.IOLoop.instance()
         http_server = tornado.httpserver.HTTPServer(self.app)
-        http_server.listen(self.options.web_port, self.options.web_iface)
+        http_server.listen(self.options.web_port, "0.0.0.0")
         web_url = "http://{}:{}/".format(self.options.web_iface, self.options.web_port)
         self.log.info(
             "Web server listening at {}".format(web_url),
         )
 
         api_server = tornado.httpserver.HTTPServer(self.api)
-        api_server.listen(self.options.web_port + 1, self.options.web_iface)
+        api_server.listen(self.options.web_port + 1, "0.0.0.0")
         api_url = "http://{}:{}/".format(self.options.web_iface, self.options.web_port + 1)
         self.log.info(
             "api server listening at {}".format(api_url),
