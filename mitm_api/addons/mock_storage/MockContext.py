@@ -26,6 +26,9 @@ class MockContext:
 
         self.configs.append(config)
 
+    def clear_mocks(self):
+        self.configs = []
+
     def get_mock(self, flow: http.HTTPFlow):
         service = flow.request.path.split('/')[1]
 
@@ -37,10 +40,6 @@ class MockContext:
         raw_url.pop(0)
 
         method = '/'.join(map(str, raw_url))
-
-        print(service, method, flow.request.method)
-
-        print(flow.request.query)
 
         params = {}
 
@@ -54,7 +53,7 @@ class MockContext:
 
         if mock:
             ctx.log("[mocking][{}] {}".format(self.key, method))
-            flow.response.text = json.dumps(mock["response"]["result"])
+            flow.response.text = json.dumps(mock["response"])
             flow.response.status_code = mock["status"]
 
 

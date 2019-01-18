@@ -36,9 +36,17 @@ class MockCreateHandler(RequestHandler):
     добавляет мок для текущего контекста
     """
     def post(self, context):
-        print("create proxy for", context)
         mock_addon = self.master.addons.get("mockaddon")
         mock_addon.add_mock(context, tornado.escape.json_decode(self.request.body))
+
+
+class MockClearHandler(RequestHandler):
+    """
+    добавляет мок для текущего контекста
+    """
+    def post(self, context):
+        mock_addon = self.master.addons.get("mockaddon")
+        mock_addon.clear_mocks(context)
 
 
 class RedirectHandler(RequestHandler):
@@ -73,6 +81,7 @@ class ApiRouter(BaseApiApplication):
         super().__init__(master, debug)
         self.add_handlers(HOST_MATHER, [
             (r"/api/v1/mock/(?P<context>[\.0-9a-zA-Z\-]+)", MockCreateHandler),
+            (r"/api/v1/mock/(?P<context>[\.0-9a-zA-Z\-]+)/clear", MockClearHandler),
             (r"/api/v1/(?P<host>[\.0-9a-z\-]+)/track", MatcherHandler),
             (r"/api/v1/(?P<context>[\.0-9a-zA-Z\-]+)/redirect", RedirectHandler),
         ])

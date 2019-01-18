@@ -20,7 +20,8 @@ class MockAddon:
         if context:
             self._handle_hidden_redirect(context, flow, original_host)
 
-    def _handle_hidden_redirect(self, context, flow, original_host):
+    @staticmethod
+    def _handle_hidden_redirect(context, flow, original_host):
         """
         если указано что какой-то хост нужно тихо перевести на другой хост
         можно просто поменять параметры в флоу
@@ -44,11 +45,25 @@ class MockAddon:
             mock_storage = self.sessions[session]
             mock_storage.get_mock(flow)
 
+    def error(self, flow: http.HTTPFlow):
+        """
+            An HTTP error has occurred, e.g. invalid server responses, or
+            interrupted connections. This is distinct from a valid server HTTP
+            error response, which is simply a response with an HTTP error code.
+        """
+        pass
+
     def add_mock(self, session, mock_config):
-        print(session)
         self._ensure_context(session)
 
+        ctx.log("[mocking][{}] add mock".format(session))
         self.sessions[session].add_mock(mock_config)
+
+    def clear_mocks(self, session):
+        self._ensure_context(session)
+
+        ctx.log("[mocking][{}] clear all mocks".format(session))
+        self.sessions[session].clear_mocks()
 
     def add_redirect(self, session, from_url, to_url):
         ctx.log("[spoofing][{}] add_redirect ({} -> {})".format(session, from_url, to_url))
@@ -66,6 +81,9 @@ class MockAddon:
 
 
 def extract_context(flow: http.HTTPFlow):
+    if "Referer" not in flow.request.headers:
+        return None
+
     referer = flow.request.headers["Referer"]
 
     is_context = re.search(r"/key-[\w-]*/", referer)
