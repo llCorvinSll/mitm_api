@@ -24,7 +24,21 @@ class MockContext:
         if "status" not in config:
             config["status"] = 200
 
-        self.configs.append(config)
+        if "params" not in config:
+            config["params"] = {}
+
+        config["command"] = normalise_path(config["command"])
+
+        is_added = False
+
+        for index, cfg in enumerate(self.configs):
+            if is_configs_identical(cfg, config):
+                self.configs[index] = config
+                is_added = True
+                break
+
+        if not is_added:
+            self.configs.append(config)
 
     def clear_mocks(self):
         self.configs = []
@@ -115,3 +129,24 @@ def format_response(cfg):
         "response": cfg["response"],
         "status": cfg["status"]
     }
+
+
+def is_configs_identical(a, b):
+    if (a["service"] != b["service"] or
+            a["command"] != b["command"] or
+            a["method"] != b["method"]):
+        return False
+
+    if len(a["params"].keys()) != len(a["params"].keys()):
+        return False
+
+    a_params = a["params"]
+    b_params = b["params"]
+
+    for key in a_params:
+        if key not in b_params:
+            return False
+        if a_params[key] != b_params[key]:
+            return False
+
+    return True
